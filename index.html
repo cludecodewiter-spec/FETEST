@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>基数変換クイズ｜基本情報技術者試験対策</title>
+<meta name="description" content="2進数・8進数・10進数・16進数の基数変換、2の補数表現を練習できるオフライン対応の一問一答クイズです。">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext x='50' y='62' font-size='42' text-anchor='middle' fill='white' font-family='monospace' font-weight='bold'%3E10%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f3f4f8;
+  --card:#ffffff;
+  --text:#1c1f2a;
+  --muted:#6b7280;
+  --primary:#4f46e5;
+  --primary-dark:#4338ca;
+  --primary-contrast:#ffffff;
+  --correct:#16a34a;
+  --correct-bg:#dcfce7;
+  --wrong:#dc2626;
+  --wrong-bg:#fee2e2;
+  --border:#e5e7eb;
+  --chip-bg:#eef0f7;
+  --accent2:#0ea5e9;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1115;
+    --card:#1a1d27;
+    --text:#e8e9ee;
+    --muted:#9aa0ac;
+    --primary:#818cf8;
+    --primary-dark:#6366f1;
+    --primary-contrast:#0f1115;
+    --correct:#4ade80;
+    --correct-bg:#123321;
+    --wrong:#f87171;
+    --wrong-bg:#3a1414;
+    --border:#2a2e3a;
+    --chip-bg:#232734;
+    --accent2:#38bdf8;
+    --shadow: 0 1px 3px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  min-height:100vh;
+  overscroll-behavior-y:contain;
+}
+#app{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 24px);
+  display:flex;
+  flex-direction:column;
+}
+h1,h2,h3,p{margin:0;}
+.header{text-align:center;margin-bottom:18px;}
+.header .title{font-size:22px;font-weight:800;letter-spacing:.02em;}
+.header .subtitle{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  margin-bottom:14px;
+}
+.stats-row{display:flex;justify-content:space-between;gap:8px;text-align:center;}
+.stats-row .stat{flex:1;}
+.stats-row .stat .num{font-size:20px;font-weight:800;color:var(--primary);}
+.stats-row .stat .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.section-title{font-size:13px;font-weight:700;color:var(--muted);margin:4px 0 10px;text-transform:uppercase;letter-spacing:.04em;}
+.chip-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.chip{
+  border:1.5px solid var(--border);
+  background:var(--chip-bg);
+  border-radius:12px;
+  padding:10px 10px;
+  font-size:13px;
+  font-weight:600;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+  color:var(--text);
+  transition:all .12s ease;
+}
+.chip.on{
+  border-color:var(--primary);
+  background:var(--primary);
+  color:var(--primary-contrast);
+}
+.chip .acc{display:block;font-size:10.5px;font-weight:500;opacity:.8;margin-top:2px;}
+.seg{display:flex;background:var(--chip-bg);border-radius:12px;padding:4px;gap:4px;}
+.seg button{
+  flex:1;border:none;background:transparent;padding:10px 0;border-radius:9px;
+  font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;
+}
+.seg button.on{background:var(--primary);color:var(--primary-contrast);}
+.btn-row{display:flex;gap:8px;margin-top:4px;}
+.btn{
+  display:block;width:100%;border:none;border-radius:14px;
+  padding:15px 16px;font-size:16px;font-weight:800;cursor:pointer;
+  text-align:center;
+}
+.btn-primary{background:var(--primary);color:var(--primary-contrast);box-shadow:0 4px 14px rgba(79,70,229,.35);}
+.btn-primary:active{background:var(--primary-dark);}
+.btn-ghost{background:var(--chip-bg);color:var(--text);}
+.btn-small{padding:9px 12px;font-size:12.5px;border-radius:10px;font-weight:700;}
+.link-btn{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:6px;}
+.spacer{flex:1;}
+.progress-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.progress-bar{flex:1;height:8px;background:var(--chip-bg);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--primary);border-radius:99px;transition:width .25s ease;}
+.progress-txt{font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700;}
+.score-txt{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;}
+.cat-tag{
+  display:inline-block;font-size:11px;font-weight:700;color:var(--primary);
+  background:var(--chip-bg);padding:4px 10px;border-radius:99px;margin-bottom:10px;
+}
+.question-text{font-size:17px;line-height:1.7;font-weight:600;margin-bottom:4px;}
+.question-text b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1.1em;color:var(--primary);letter-spacing:.02em;word-break:break-all;}
+.choice{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:var(--card);border:1.5px solid var(--border);border-radius:14px;
+  padding:14px;margin-top:10px;cursor:pointer;font-size:15px;font-weight:600;
+  color:var(--text);text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.choice .badge{
+  flex:0 0 auto;width:28px;height:28px;border-radius:50%;
+  background:var(--chip-bg);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;font-family:-apple-system,sans-serif;color:var(--muted);
+}
+.choice .val{word-break:break-all;flex:1;}
+.choice.correct{border-color:var(--correct);background:var(--correct-bg);}
+.choice.correct .badge{background:var(--correct);color:#fff;}
+.choice.wrong{border-color:var(--wrong);background:var(--wrong-bg);}
+.choice.wrong .badge{background:var(--wrong);color:#fff;}
+.choice.disabled{cursor:default;}
+.explain{
+  margin-top:14px;background:var(--chip-bg);border-radius:14px;padding:14px;
+  font-size:13px;line-height:1.75;color:var(--text);white-space:pre-line;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.explain .head{font-family:-apple-system,sans-serif;font-weight:800;font-size:13px;margin-bottom:6px;color:var(--muted);}
+.result-symbol{font-weight:800;font-family:-apple-system,sans-serif;}
+.result-symbol.ok{color:var(--correct);}
+.result-symbol.ng{color:var(--wrong);}
+.big-score{text-align:center;padding:20px 0 8px;}
+.big-score .circle{
+  width:150px;height:150px;border-radius:50%;margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  border:10px solid var(--chip-bg);position:relative;
+}
+.big-score .circle .n{font-size:34px;font-weight:900;color:var(--primary);}
+.big-score .circle .d{font-size:12px;color:var(--muted);font-weight:700;}
+.big-score .msg{font-size:15px;font-weight:700;margin-top:4px;}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.breakdown-row:last-child{border-bottom:none;}
+.breakdown-row .cname{font-weight:600;}
+.breakdown-row .cscore{font-weight:800;font-family:ui-monospace,monospace;}
+.footer-note{text-align:center;font-size:11px;color:var(--muted);margin-top:6px;padding:0 8px;line-height:1.6;}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.icon-btn{background:none;border:none;color:var(--muted);font-size:20px;padding:4px 8px;cursor:pointer;line-height:1;}
+@keyframes shake{
+  10%,90%{transform:translateX(-2px);}
+  20%,80%{transform:translateX(3px);}
+  30%,50%,70%{transform:translateX(-5px);}
+  40%,60%{transform:translateX(5px);}
+}
+.shake{animation:shake .4s;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+"use strict";
+
+/* ---------- utils ---------- */
+function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function pick(arr){return arr[randInt(0,arr.length-1)];}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function storageGet(key,fallback){
+  try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch(e){return fallback;}
+}
+function storageSet(key,val){
+  try{localStorage.setItem(key,JSON.stringify(val));}catch(e){/* offline / private mode: ignore */}
+}
+
+/* ---------- categories ---------- */
+const CATEGORIES=[
+  {id:'d2b',   label:'10進数→2進数'},
+  {id:'b2d',   label:'2進数→10進数'},
+  {id:'d2h',   label:'10進数→16進数'},
+  {id:'h2d',   label:'16進数→10進数'},
+  {id:'b2h',   label:'2進数→16進数'},
+  {id:'h2b',   label:'16進数→2進数'},
+  {id:'d2o',   label:'10進数→8進数'},
+  {id:'o2d',   label:'8進数→10進数'},
+  {id:'frac',  label:'小数の基数変換'},
+  {id:'comp2', label:'2の補数(負の数)'},
+  {id:'comp2rev', label:'2の補数→10進数'},
+];
+const CAT_LABEL={}; CATEGORIES.forEach(c=>CAT_LABEL[c.id]=c.label);
+const LETTERS=['ア','イ','ウ','エ'];
+
+/* ---------- choice builder ---------- */
+function makeChoices(correctValue, formatFn, deltaPool, opts){
+  opts=opts||{};
+  const correctStr=formatFn(correctValue);
+  const list=[correctStr];
+  function tryAdd(v){
+    if(list.length>=4) return;
+    if(opts.min!==undefined && v<opts.min) return;
+    if(opts.max!==undefined && v>opts.max) return;
+    const s=formatFn(v);
+    if(s!==null && s!==undefined && list.indexOf(s)===-1) list.push(s);
+  }
+  shuffle(deltaPool).forEach(d=>tryAdd(correctValue+d));
+  let guard=0;
+  while(list.length<4 && guard<80){
+    guard++;
+    tryAdd(correctValue+randInt(-30,30));
+  }
+  const arr=shuffle(list);
+  return {choices:arr, correctIndex:arr.indexOf(correctStr)};
+}
+const formatBin=v=>v>=0? v.toString(2):null;
+const formatHex=v=>v>=0? v.toString(16).toUpperCase():null;
+const formatOct=v=>v>=0? v.toString(8):null;
+const formatDec=v=>v>=0? String(v):null;
+
+/* ---------- question generators ---------- */
+function genD2B(){
+  const v=randInt(9,250);
+  const {choices,correctIndex}=makeChoices(v,formatBin,[1,-1,2,-2,3,-3,4,-4,5,-5,8,-8,16,-16],{min:1,max:255});
+  let steps=[],n=v;
+  while(n>0){steps.push(n+' ÷ 2 = '+Math.floor(n/2)+' 余り '+(n%2));n=Math.floor(n/2);}
+  const explanation='10進数 '+v+' を2で割り続け、余りを下から上に並べます。\n'+steps.join('\n')+'\n→ 2進数で '+v.toString(2);
+  return {category:'d2b',prompt:'10進数の <b>'+v+'</b> を2進数で表すとどれか。',choices,correctIndex,explanation};
+}
+function genB2D(){
+  const len=randInt(4,8);
+  let bits='1';
+  for(let i=1;i<len;i++) bits+=(Math.random()<0.5?'0':'1');
+  const v=parseInt(bits,2);
+  const {choices,correctIndex}=makeChoices(v,formatDec,[1,-1,2,-2,3,-3,4,-4,8,-8,16,-16],{min:0});
+  const parts=[];
+  for(let i=0;i<bits.length;i++){
+    const power=bits.length-1-i;
+    if(bits[i]==='1') parts.push('2^'+power+'(='+Math.pow(2,power)+')');
+  }
+  const explanation='各桁の重み(2の累乗)を掛けて合計します。\n2進数 '+bits+' = '+parts.join(' + ')+' = '+v;
+  return {category:'b2d',prompt:'2進数の <b>'+bits+'</b> を10進数に変換した値として正しいものはどれか。',choices,correctIndex,explanation};
+}
+function genD2H(){
+  const v=randInt(10,4095);
+  const {choices,correctIndex}=makeChoices(v,formatHex,[1,-1,2,-2,3,-3,4,-4,16,-16,32,-32],{min:0,max:65535});
+  let steps=[],n=v;
+  while(n>0){const q=Math.floor(n/16),r=n%16;steps.push(n+' ÷ 16 = '+q+' 余り '+r.toString(16).toUpperCase());n=q;}
+  const explanation='10進数 '+v+' を16で割り続け、余りを16進数の数字として下から上に並べます。\n'+steps.join('\n')+'\n→ 16進数で '+v.toString(16).toUpperCase();
+  return {category:'d2h',prompt:'10進数の <b>'+v+'</b> を16進数で表すとどれか。',choices,correctIndex,explanation};
+}
+function genH2D(){
+  const len=randInt(2,3);
+  const hd='0123456789ABCDEF';
+  let s=hd[randInt(1,15)];
+  for(let i=1;i<len;i++) s+=hd[randInt(0,15)];
+  const v=parseInt(s,16);
+  const {choices,correctIndex}=makeChoices(v,formatDec,[1,-1,2,-2,4,-4,16,-16,32,-32],{min:0});
+  const parts=[];
+  for(let i=0;i<s.length;i++){const d=parseInt(s[i],16);const power=s.length-1-i;parts.push(d+'×16^'+power);}
+  const explanation='各桁の数字に16の累乗を掛けて合計します。\n16進数 '+s+' = '+parts.join(' + ')+' = '+v;
+  return {category:'h2d',prompt:'16進数の <b>'+s+'</b> を10進数に変換した値として正しいものはどれか。',choices,correctIndex,explanation};
+}
+function genB2H(){
+  const nibbles=randInt(2,3);
+  let bits='';
+  for(let i=0;i<nibbles;i++){
+    bits+= i===0? randInt(1,15).toString(2).padStart(4,'0') : randInt(0,15).toString(2).padStart(4,'0');
+  }
+  const v=parseInt(bits,2);
+  const {choices,correctIndex}=makeChoices(v,formatHex,[1,-1,2,-2,3,-3,16,-16],{min:0});
+  const groups=[];
+  for(let i=0;i<bits.length;i+=4) groups.push(bits.slice(i,i+4));
+  const hexParts=groups.map(g=>parseInt(g,2).toString(16).toUpperCase());
+  const explanation='2進数を右から4桁ずつ区切り、それぞれを16進数の1桁に変換します。\n'+groups.join(' ')+' → '+hexParts.join(' ')+' → '+v.toString(16).toUpperCase();
+  return {category:'b2h',prompt:'2進数の <b>'+bits+'</b> を16進数で表すとどれか。',choices,correctIndex,explanation};
+}
+function genH2B(){
+  const len=randInt(2,3);
+  const hd='0123456789ABCDEF';
+  let s=hd[randInt(1,15)];
+  for(let i=1;i<len;i++) s+=hd[randInt(0,15)];
+  const bits=s.split('').map(ch=>parseInt(ch,16).toString(2).padStart(4,'0')).join('');
+  const v=parseInt(s,16);
+  const width=bits.length;
+  const cap=Math.pow(2,width)-1;
+  const formatBinPadded=x=>(x>=0 && x<=cap)? x.toString(2).padStart(width,'0'):null;
+  const {choices,correctIndex}=makeChoices(v,formatBinPadded,[1,-1,2,-2,3,-3,4,-4,8,-8,16,-16],{min:0,max:cap});
+  const hexParts=s.split('');
+  const binParts=hexParts.map(ch=>parseInt(ch,16).toString(2).padStart(4,'0'));
+  const explanation='16進数の各桁を4桁の2進数に変換して並べます。\n'+hexParts.join(' ')+' → '+binParts.join(' ')+' → '+bits;
+  return {category:'h2b',prompt:'16進数の <b>'+s+'</b> を2進数で表すとどれか。',choices,correctIndex,explanation};
+}
+function genD2O(){
+  const v=randInt(9,511);
+  const {choices,correctIndex}=makeChoices(v,formatOct,[1,-1,2,-2,3,-3,8,-8,16,-16],{min:0,max:4095});
+  let steps=[],n=v;
+  while(n>0){const q=Math.floor(n/8),r=n%8;steps.push(n+' ÷ 8 = '+q+' 余り '+r);n=q;}
+  const explanation='10進数 '+v+' を8で割り続け、余りを下から上に並べます。\n'+steps.join('\n')+'\n→ 8進数で '+v.toString(8);
+  return {category:'d2o',prompt:'10進数の <b>'+v+'</b> を8進数で表すとどれか。',choices,correctIndex,explanation};
+}
+function genO2D(){
+  const len=randInt(2,3);
+  let s=String(randInt(1,7));
+  for(let i=1;i<len;i++) s+=String(randInt(0,7));
+  const v=parseInt(s,8);
+  const {choices,correctIndex}=makeChoices(v,formatDec,[1,-1,2,-2,4,-4,8,-8,16,-16],{min:0});
+  const parts=[];
+  for(let i=0;i<s.length;i++){const d=parseInt(s[i],8);const power=s.length-1-i;parts.push(d+'×8^'+power);}
+  const explanation='各桁の数字に8の累乗を掛けて合計します。\n8進数 '+s+' = '+parts.join(' + ')+' = '+v;
+  return {category:'o2d',prompt:'8進数の <b>'+s+'</b> を10進数に変換した値として正しいものはどれか。',choices,correctIndex,explanation};
+}
+function binFracToDec(bits){let s=0;for(let i=0;i<bits.length;i++){if(bits[i]==='1') s+=1/Math.pow(2,i+1);}return s;}
+function trimDec(n){
+  let s=n.toFixed(4);
+  s=s.replace(/0+$/,'');
+  if(s.endsWith('.')) s+='0';
+  return s;
+}
+function genFrac(){
+  const k=randInt(2,4);
+  const denom=Math.pow(2,k);
+  const num=randInt(1,denom-1);
+  const value=num/denom;
+  const fracBits=num.toString(2).padStart(k,'0');
+  const correctBinStr='0.'+fracBits;
+  const others=[];
+  for(let x=0;x<denom;x++) if(x!==num) others.push(x);
+  const distractorNums=shuffle(others).slice(0,3);
+  const allNums=shuffle([num].concat(distractorNums));
+  const forward=Math.random()<0.5;
+  if(forward){
+    const choicesArr=allNums.map(x=>'0.'+x.toString(2).padStart(k,'0'));
+    const correctIndex=choicesArr.indexOf(correctBinStr);
+    let steps=[],f=value;
+    for(let i=0;i<k;i++){
+      const doubled=f*2;
+      const bit=doubled>=1?1:0;
+      steps.push(trimDec(f)+' × 2 = '+trimDec(doubled)+' → 整数部は '+bit);
+      f=doubled-bit;
+    }
+    const explanation='小数部に2を掛け続け、出てくる整数部を上から順に並べます。\n'+steps.join('\n')+'\n→ 2進数で '+correctBinStr;
+    return {category:'frac',prompt:'10進数の <b>'+trimDec(value)+'</b> を2進数の小数で表すとどれか。',choices:choicesArr,correctIndex,explanation};
+  }else{
+    const correctDecStr=trimDec(value);
+    const choicesArr=allNums.map(x=>trimDec(x/denom));
+    const correctIndex=choicesArr.indexOf(correctDecStr);
+    const parts=[];
+    for(let i=0;i<fracBits.length;i++){
+      if(fracBits[i]==='1') parts.push('2^-'+(i+1)+'(='+trimDec(1/Math.pow(2,i+1))+')');
+    }
+    const explanation='小数点以下の各桁の重み(2の負の累乗)を掛けて合計します。\n2進数 '+correctBinStr+' = '+(parts.length?parts.join(' + '):'0')+' = '+correctDecStr;
+    return {category:'frac',prompt:'2進数の <b>'+correctBinStr+'</b> を10進数の小数で表すとどれか。',choices:choicesArr,correctIndex,explanation};
+  }
+}
+function genComp2(){
+  const width=8;
+  const twoPow=Math.pow(2,width);
+  const magnitude=randInt(1,127);
+  const target=-magnitude;
+  const complementValue=(twoPow+target)%twoPow;
+  const correctBits=complementValue.toString(2).padStart(width,'0');
+  const magBits=magnitude.toString(2).padStart(width,'0');
+  const onesComp=magBits.split('').map(b=>b==='0'?'1':'0').join('');
+  const offBy1=((complementValue+1)%twoPow).toString(2).padStart(width,'0');
+  const cands=[correctBits];
+  function tryAdd(s){if(s && cands.indexOf(s)===-1 && cands.length<4) cands.push(s);}
+  tryAdd(onesComp);
+  tryAdd(magBits);
+  tryAdd(offBy1);
+  let guard=0;
+  while(cands.length<4 && guard<40){
+    guard++;
+    const arr=correctBits.split('');
+    const idx=randInt(0,width-1);
+    arr[idx]=arr[idx]==='0'?'1':'0';
+    tryAdd(arr.join(''));
+  }
+  const choicesArr=shuffle(cands);
+  const correctIndex=choicesArr.indexOf(correctBits);
+  const explanation=magnitude+'の2進数表現('+width+'ビット)は '+magBits+'。\n全ビットを反転(1の補数)すると '+onesComp+'。\nさらに1を加えると '+correctBits+'。\nよって -'+magnitude+' は '+width+'ビットの2の補数表現で '+correctBits+' となる。';
+  return {category:'comp2',prompt:width+'ビットの2進数で <b>-'+magnitude+'</b> を2の補数表現で表すとどれか。',choices:choicesArr,correctIndex,explanation};
+}
+function genComp2Rev(){
+  const width=8;
+  const twoPow=Math.pow(2,width);
+  const magnitude=randInt(1,127);
+  const target=-magnitude;
+  const complementValue=(twoPow+target)%twoPow;
+  const bits=complementValue.toString(2).padStart(width,'0');
+  const correctDecimal=target;
+  const unsignedValue=complementValue;
+  const cands=[String(correctDecimal)];
+  function tryAdd(v){const s=String(v);if(cands.indexOf(s)===-1 && cands.length<4) cands.push(s);}
+  tryAdd(magnitude);
+  tryAdd(unsignedValue);
+  tryAdd(correctDecimal+1);
+  tryAdd(correctDecimal-1);
+  let guard=0;
+  while(cands.length<4 && guard<40){guard++;tryAdd(correctDecimal+randInt(-15,15));}
+  const choicesArr=shuffle(cands);
+  const correctIndex=choicesArr.indexOf(String(correctDecimal));
+  const inverted=bits.split('').map(b=>b==='0'?'1':'0').join('');
+  const magBinPlus1=magnitude.toString(2).padStart(width,'0');
+  const explanation='最上位ビットが1なので負の数です。絶対値を求めるにはもう一度2の補数(反転して+1)を取ります。\n反転: '+bits+' → '+inverted+'\n+1  : '+inverted+' → '+magBinPlus1+'(=10進数 '+magnitude+')\nよって '+bits+' は 10進数で -'+magnitude+' = '+correctDecimal;
+  return {category:'comp2rev',prompt:width+'ビットの2進数 <b>'+bits+'</b> を2の補数表現とみなして10進数に変換すると、どれか。',choices:choicesArr,correctIndex,explanation};
+}
+
+const GENERATORS={d2b:genD2B,b2d:genB2D,d2h:genD2H,h2d:genH2D,b2h:genB2H,h2b:genH2B,d2o:genD2O,o2d:genO2D,frac:genFrac,comp2:genComp2,comp2rev:genComp2Rev};
+function generateQuestion(catId){return GENERATORS[catId]();}
+
+/* ---------- persistent stats ---------- */
+function loadCatStats(){return storageGet('rq_catstats',{});}
+function saveCatStats(s){storageSet('rq_catstats',s);}
+function updateCatStats(catId,correct){
+  const s=loadCatStats();
+  if(!s[catId]) s[catId]={correct:0,total:0};
+  s[catId].total++;
+  if(correct) s[catId].correct++;
+  saveCatStats(s);
+}
+function loadHistory(){return storageGet('rq_history',[]);}
+function pushHistory(entry){
+  const h=loadHistory();
+  h.unshift(entry);
+  while(h.length>20) h.pop();
+  storageSet('rq_history',h);
+}
+
+/* ---------- state ---------- */
+const state={
+  screen:'home',
+  selected:new Set(CATEGORIES.map(c=>c.id)),
+  numQuestions:10,
+  questions:[],
+  answers:[],
+  currentIndex:0,
+};
+
+function toggleCategory(id){
+  if(state.selected.has(id)) state.selected.delete(id); else state.selected.add(id);
+  render();
+}
+function setNum(n){state.numQuestions=n;render();}
+
+function startQuiz(){
+  const cats=CATEGORIES.filter(c=>state.selected.has(c.id)).map(c=>c.id);
+  if(cats.length===0){alert('出題範囲を1つ以上選んでください。');return;}
+  state.questions=[];
+  for(let i=0;i<state.numQuestions;i++) state.questions.push(generateQuestion(pick(cats)));
+  state.answers=new Array(state.questions.length).fill(null);
+  state.currentIndex=0;
+  state.screen='quiz';
+  render();
+}
+function quitQuiz(){
+  if(confirm('クイズを中断してホームに戻りますか？')){
+    state.screen='home';
+    render();
+  }
+}
+function selectAnswer(i){
+  const idx=state.currentIndex;
+  if(state.answers[idx]) return;
+  const q=state.questions[idx];
+  const correct=(i===q.correctIndex);
+  state.answers[idx]={selected:i,correct};
+  updateCatStats(q.category,correct);
+  render();
+  if(!correct){
+    const el=document.querySelector('.choice.wrong');
+    if(el){el.classList.add('shake');}
+  }
+}
+function nextQuestion(){
+  if(state.currentIndex+1<state.questions.length){
+    state.currentIndex++;
+    render();
+  }else{
+    finishQuiz();
+  }
+}
+function finishQuiz(){
+  const score=state.answers.filter(a=>a&&a.correct).length;
+  const byCat={};
+  state.questions.forEach((q,i)=>{
+    if(!byCat[q.category]) byCat[q.category]={correct:0,total:0};
+    byCat[q.category].total++;
+    if(state.answers[i]&&state.answers[i].correct) byCat[q.category].correct++;
+  });
+  pushHistory({date:new Date().toISOString(),total:state.questions.length,score,byCat});
+  state.lastResult={score,total:state.questions.length,byCat};
+  state.screen='result';
+  render();
+}
+function retrySame(){startQuiz();}
+function goHome(){state.screen='home';render();}
+function resetStats(){
+  if(confirm('これまでの学習記録をすべて削除しますか？この操作は元に戻せません。')){
+    storageSet('rq_catstats',{});
+    storageSet('rq_history',[]);
+    render();
+  }
+}
+
+/* ---------- render: home ---------- */
+function renderHome(){
+  const history=loadHistory();
+  const catStats=loadCatStats();
+  let totalQ=0,totalC=0;
+  Object.keys(catStats).forEach(k=>{totalQ+=catStats[k].total;totalC+=catStats[k].correct;});
+  const overallAcc=totalQ? Math.round(totalC/totalQ*100):0;
+
+  let statsCard='';
+  if(totalQ>0){
+    statsCard=
+      '<div class="card">'+
+        '<div class="stats-row">'+
+          '<div class="stat"><div class="num">'+history.length+'</div><div class="lbl">実施回数</div></div>'+
+          '<div class="stat"><div class="num">'+totalQ+'</div><div class="lbl">解いた問題数</div></div>'+
+          '<div class="stat"><div class="num">'+overallAcc+'%</div><div class="lbl">総合正答率</div></div>'+
+        '</div>'+
+      '</div>';
+  }
+
+  const chipGrid=CATEGORIES.map(c=>{
+    const s=catStats[c.id];
+    const acc=s&&s.total? Math.round(s.correct/s.total*100):null;
+    const accHtml=acc===null? '未実施' : '正答率 '+acc+'%';
+    const on=state.selected.has(c.id)?' on':'';
+    return '<div class="chip'+on+'" data-cat="'+c.id+'"><span>'+c.label+'</span><span class="acc">'+accHtml+'</span></div>';
+  }).join('');
+
+  const nums=[5,10,15,20];
+  const segButtons=nums.map(n=>'<button data-num="'+n+'" class="'+(state.numQuestions===n?'on':'')+'">'+n+'問</button>').join('');
+
+  const resetBtn = totalQ>0? '<button class="link-btn" id="btn-reset">学習記録をリセット</button>' : '';
+
+  return (
+    '<div class="header">'+
+      '<div class="title">基数変換クイズ</div>'+
+      '<div class="subtitle">基本情報技術者試験の頻出範囲「基数変換・2の補数」対策<br>オフラインで何度でも使えます</div>'+
+    '</div>'+
+    statsCard+
+    '<div class="card">'+
+      '<div class="section-title">出題範囲を選ぶ</div>'+
+      '<div class="chip-grid">'+chipGrid+'</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="section-title">問題数</div>'+
+      '<div class="seg">'+segButtons+'</div>'+
+    '</div>'+
+    '<div class="spacer"></div>'+
+    '<button class="btn btn-primary" id="btn-start">クイズをはじめる</button>'+
+    '<div class="footer-note">'+resetBtn+'<br>すべての問題はこの端末上でランダム生成されます。通信は行いません。</div>'
+  );
+}
+
+/* ---------- render: quiz ---------- */
+function renderQuiz(){
+  const idx=state.currentIndex;
+  const total=state.questions.length;
+  const q=state.questions[idx];
+  const ans=state.answers[idx];
+  const answeredCount=state.answers.filter(a=>a).length;
+  const scoreSoFar=state.answers.filter(a=>a&&a.correct).length;
+  const progressPct=Math.round((idx/total)*100);
+
+  const choicesHtml=q.choices.map((c,i)=>{
+    let cls='choice';
+    if(ans){
+      cls+=' disabled';
+      if(i===q.correctIndex) cls+=' correct';
+      else if(i===ans.selected) cls+=' wrong';
+    }
+    return '<button class="'+cls+'" data-i="'+i+'" '+(ans?'disabled':'')+'>'+
+      '<span class="badge">'+LETTERS[i]+'</span><span class="val">'+escapeHtml(c)+'</span>'+
+    '</button>';
+  }).join('');
+
+  let explainHtml='';
+  if(ans){
+    const resultLabel=ans.correct?
+      '<span class="result-symbol ok">○ 正解</span>' :
+      '<span class="result-symbol ng">× 不正解</span>';
+    explainHtml=
+      '<div class="explain"><div class="head">'+resultLabel+' ・ 解説</div>'+escapeHtml(q.explanation)+'</div>'+
+      '<button class="btn btn-primary" id="btn-next" style="margin-top:14px;">'+(idx+1<total? '次の問題へ':'結果を見る')+'</button>';
+  }
+
+  return (
+    '<div class="top-bar">'+
+      '<button class="icon-btn" id="btn-quit" aria-label="中断">✕</button>'+
+      '<span class="score-txt">正解 '+scoreSoFar+' / '+answeredCount+'</span>'+
+    '</div>'+
+    '<div class="progress-wrap">'+
+      '<div class="progress-bar"><div class="progress-fill" style="width:'+progressPct+'%;"></div></div>'+
+      '<div class="progress-txt">'+(idx+1)+' / '+total+'</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<span class="cat-tag">'+CAT_LABEL[q.category]+'</span>'+
+      '<div class="question-text">'+q.prompt+'</div>'+
+      choicesHtml+
+      explainHtml+
+    '</div>'
+  );
+}
+
+/* ---------- render: result ---------- */
+function renderResult(){
+  const r=state.lastResult;
+  const pct=Math.round(r.score/r.total*100);
+  let msg;
+  if(pct>=90) msg='素晴らしい！この調子です';
+  else if(pct>=70) msg='よくできました';
+  else if(pct>=50) msg='あと少し、復習しましょう';
+  else msg='基礎からもう一度確認しましょう';
+
+  const rows=Object.keys(r.byCat).map(catId=>{
+    const s=r.byCat[catId];
+    return '<div class="breakdown-row"><span class="cname">'+CAT_LABEL[catId]+'</span><span class="cscore">'+s.correct+' / '+s.total+'</span></div>';
+  }).join('');
+
+  return (
+    '<div class="header"><div class="title">結果</div></div>'+
+    '<div class="card">'+
+      '<div class="big-score">'+
+        '<div class="circle"><div class="n">'+r.score+'/'+r.total+'</div><div class="d">正解数</div></div>'+
+        '<div class="msg">'+msg+'（正答率 '+pct+'%）</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="section-title">分野別の結果</div>'+
+      rows+
+    '</div>'+
+    '<div class="spacer"></div>'+
+    '<button class="btn btn-primary" id="btn-retry">もう一度同じ設定で挑戦</button>'+
+    '<div style="height:8px;"></div>'+
+    '<button class="btn btn-ghost" id="btn-home">出題範囲を選び直す</button>'
+  );
+}
+
+/* ---------- render dispatch + event binding ---------- */
+function render(){
+  const app=document.getElementById('app');
+  if(state.screen==='home') app.innerHTML=renderHome();
+  else if(state.screen==='quiz') app.innerHTML=renderQuiz();
+  else app.innerHTML=renderResult();
+  bindEvents();
+  window.scrollTo(0,0);
+}
+function bindEvents(){
+  if(state.screen==='home'){
+    document.querySelectorAll('.chip').forEach(el=>{
+      el.addEventListener('click',()=>toggleCategory(el.getAttribute('data-cat')));
+    });
+    document.querySelectorAll('.seg button').forEach(el=>{
+      el.addEventListener('click',()=>setNum(parseInt(el.getAttribute('data-num'),10)));
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn) startBtn.addEventListener('click',startQuiz);
+    const resetBtn=document.getElementById('btn-reset');
+    if(resetBtn) resetBtn.addEventListener('click',resetStats);
+  }else if(state.screen==='quiz'){
+    document.querySelectorAll('.choice').forEach(el=>{
+      el.addEventListener('click',()=>selectAnswer(parseInt(el.getAttribute('data-i'),10)));
+    });
+    const nextBtn=document.getElementById('btn-next');
+    if(nextBtn) nextBtn.addEventListener('click',nextQuestion);
+    const quitBtn=document.getElementById('btn-quit');
+    if(quitBtn) quitBtn.addEventListener('click',quitQuiz);
+  }else if(state.screen==='result'){
+    const retryBtn=document.getElementById('btn-retry');
+    if(retryBtn) retryBtn.addEventListener('click',retrySame);
+    const homeBtn=document.getElementById('btn-home');
+    if(homeBtn) homeBtn.addEventListener('click',goHome);
+  }
+}
+
+render();
+})();
+</script>
+</body>
+</html>
